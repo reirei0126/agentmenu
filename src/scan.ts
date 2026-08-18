@@ -1,7 +1,7 @@
 import type { ServiceInput } from "./types";
 import { normalizeResource } from "./normalize";
 
-export const DISCOVERY_URL = "https://x402.org/facilitator/discovery/resources";
+export const DISCOVERY_URL = "https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources";
 const PAGE_LIMIT = 100;
 
 export async function fetchDiscovery(fetchFn: typeof fetch, maxPages = 8): Promise<unknown[]> {

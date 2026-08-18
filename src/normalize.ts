@@ -23,22 +23,38 @@ export async function normalizeResource(item: unknown): Promise<ServiceInput | n
 
   const accepts = Array.isArray(o.accepts) ? (o.accepts as Record<string, unknown>[]) : [];
   const first = accepts[0] ?? {};
-  const amount = typeof first.maxAmountRequired === "string" ? first.maxAmountRequired : null;
+  const amount =
+    typeof first.maxAmountRequired === "string"
+      ? first.maxAmountRequired
+      : typeof first.amount === "string"
+        ? first.amount
+        : null;
   const asset = typeof first.asset === "string" ? first.asset : "";
   const price = amount ? usdFromAtomic(amount, asset) : { currency: null as string | null, usd: null };
-  const meta = (typeof o.metadata === "object" && o.metadata !== null ? o.metadata : {}) as Record<string, unknown>;
+  const rawNetwork = typeof first.network === "string" ? first.network : null;
+  const network = rawNetwork === "eip155:8453" ? "base" : rawNetwork;
+  const tags = Array.isArray(o.tags) ? (o.tags as unknown[]) : [];
+  const firstTag = typeof tags[0] === "string" ? (tags[0] as string) : null;
 
   return {
     id: await stableId(endpoint),
-    name: typeof meta.name === "string" ? meta.name : url.host + url.pathname.replace(/\/$/, ""),
+    name:
+      typeof o.serviceName === "string" && o.serviceName !== ""
+        ? o.serviceName
+        : url.host + url.pathname.replace(/\/$/, ""),
     endpoint,
     protocol: "x402",
-    network: typeof first.network === "string" ? first.network : null,
+    network,
     priceAmount: amount,
     priceCurrency: price.currency,
     usdPerCall: price.usd,
-    category: typeof meta.category === "string" ? meta.category : "other",
-    description: typeof first.description === "string" ? first.description : null,
+    category: firstTag ?? "other",
+    description:
+      typeof o.description === "string"
+        ? o.description
+        : typeof first.description === "string"
+          ? first.description
+          : null,
     source: '["bazaar"]',
   };
 }

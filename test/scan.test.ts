@@ -2,14 +2,23 @@ import { describe, it, expect } from "vitest";
 import { fetchDiscovery, scanToServices, DISCOVERY_URL } from "../src/scan";
 
 function page(items: unknown[], offset: number, total: number) {
-  return new Response(JSON.stringify({ items, pagination: { limit: 2, offset, total } }), {
+  return new Response(JSON.stringify({ items, pagination: { limit: 2, offset, total }, x402Version: 1 }), {
     headers: { "content-type": "application/json" },
   });
 }
 const item = (n: number) => ({
   resource: `https://api.example.com/svc${n}`,
-  accepts: [{ scheme: "exact", network: "base", maxAmountRequired: "10000",
-    asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", description: `svc ${n}` }],
+  description: `svc ${n}`,
+  serviceName: `Service ${n}`,
+  tags: ["data"],
+  accepts: [{ scheme: "exact", network: "eip155:8453", maxAmountRequired: "10000",
+    asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", description: `svc ${n} accept` }],
+});
+
+describe("DISCOVERY_URL", () => {
+  it("points at the live CDP discovery endpoint", () => {
+    expect(DISCOVERY_URL).toBe("https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources");
+  });
 });
 
 describe("fetchDiscovery", () => {
@@ -48,5 +57,7 @@ describe("scanToServices", () => {
     const services = await scanToServices(mock);
     expect(services.length).toBe(1);
     expect(services[0].endpoint).toBe("https://api.example.com/svc1");
+    expect(services[0].network).toBe("base");
+    expect(services[0].name).toBe("Service 1");
   });
 });
