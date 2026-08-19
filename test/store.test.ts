@@ -7,7 +7,8 @@ function svc(endpoint: string, over: Partial<ServiceInput> = {}): Promise<Servic
   return stableId(endpoint).then((id) => ({
     id, name: "Weather API", endpoint, protocol: "x402", network: "base",
     priceAmount: "10000", priceCurrency: "USDC", usdPerCall: 0.01,
-    category: "data", description: "per-call weather", source: '["bazaar"]', ...over,
+    category: "data", description: "per-call weather", source: '["bazaar"]',
+    bazaarCalls30d: 902, bazaarPayers30d: 898, ...over,
   }));
 }
 
@@ -26,5 +27,7 @@ describe("store", () => {
     expect(row.usdPerCall).toBe(0.02);
     expect(row.firstSeen).toBe("2026-08-19T00:00:00Z");
     expect(row.lastSeen).toBe("2026-08-20T00:00:00Z");
+    expect(row.bazaarCalls30d).toBe(902);
+    expect(row.bazaarPayers30d).toBe(898);
   });
 });

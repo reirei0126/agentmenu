@@ -4,6 +4,7 @@ export default defineWorkersConfig(async () => {
   const migrations = await readD1Migrations("./migrations");
   return {
     test: {
+      exclude: ["**/node_modules/**", "**/.orgh-worktrees/**"],
       setupFiles: ["./test/setup.ts"],
       poolOptions: {
         workers: {

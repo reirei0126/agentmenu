@@ -10,6 +10,8 @@ export interface ServiceInput {
   category: string;
   description: string | null;
   source: string; // JSON array string, e.g. '["bazaar"]'
+  bazaarCalls30d: number | null;
+  bazaarPayers30d: number | null;
 }
 
 export interface StoredService extends ServiceInput {

@@ -6,6 +6,12 @@ const KNOWN_ASSETS: Record<string, { symbol: string; decimals: number; usdPegged
   "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913": { symbol: "USDC", decimals: 6, usdPegged: true },
 };
 
+const KNOWN_NETWORKS: Record<string, string> = {
+  "eip155:8453": "base",
+  "eip155:1": "ethereum",
+  "base": "base",
+};
+
 export function usdFromAtomic(amount: string, asset: string): { currency: string; usd: number | null } {
   const known = KNOWN_ASSETS[asset.toLowerCase()];
   if (!known || !/^\d+$/.test(amount)) return { currency: known?.symbol ?? "UNKNOWN", usd: null };
@@ -23,18 +29,15 @@ export async function normalizeResource(item: unknown): Promise<ServiceInput | n
 
   const accepts = Array.isArray(o.accepts) ? (o.accepts as Record<string, unknown>[]) : [];
   const first = accepts[0] ?? {};
-  const amount =
-    typeof first.maxAmountRequired === "string"
-      ? first.maxAmountRequired
-      : typeof first.amount === "string"
-        ? first.amount
-        : null;
+  const amount = typeof first.amount === "string" ? first.amount
+    : typeof first.maxAmountRequired === "string" ? first.maxAmountRequired : null;
   const asset = typeof first.asset === "string" ? first.asset : "";
   const price = amount ? usdFromAtomic(amount, asset) : { currency: null as string | null, usd: null };
   const rawNetwork = typeof first.network === "string" ? first.network : null;
-  const network = rawNetwork === "eip155:8453" ? "base" : rawNetwork;
+  const network = rawNetwork ? KNOWN_NETWORKS[rawNetwork] ?? rawNetwork : null;
   const tags = Array.isArray(o.tags) ? (o.tags as unknown[]) : [];
   const firstTag = typeof tags[0] === "string" ? (tags[0] as string) : null;
+  const quality = (typeof o.quality === "object" && o.quality !== null ? o.quality : {}) as Record<string, unknown>;
 
   return {
     id: await stableId(endpoint),
@@ -56,5 +59,7 @@ export async function normalizeResource(item: unknown): Promise<ServiceInput | n
           ? first.description
           : null,
     source: '["bazaar"]',
+    bazaarCalls30d: typeof quality.l30DaysTotalCalls === "number" ? quality.l30DaysTotalCalls : null,
+    bazaarPayers30d: typeof quality.l30DaysUniquePayers === "number" ? quality.l30DaysUniquePayers : null,
   };
 }

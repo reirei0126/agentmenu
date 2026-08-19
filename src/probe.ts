@@ -43,7 +43,9 @@ export async function refreshRobots(db: D1Database, fetchFn: typeof fetch, nowIs
 export async function probeBatch(db: D1Database, fetchFn: typeof fetch, nowIso: string, limit: number): Promise<void> {
   const { results } = await db.prepare(
     `SELECT s.id, s.endpoint, (SELECT MAX(at) FROM probes p WHERE p.service_id = s.id) AS last_at
-     FROM services s ORDER BY last_at IS NOT NULL, last_at LIMIT ?1`,
+     FROM services s
+     ORDER BY (COALESCE(s.bazaar_calls_30d, 0) = 0), last_at IS NOT NULL, last_at
+     LIMIT ?1`,
   ).bind(limit).all();
 
   for (const row of results as { id: string; endpoint: string }[]) {

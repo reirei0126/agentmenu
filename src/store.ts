@@ -8,15 +8,15 @@ export async function stableId(endpoint: string): Promise<string> {
 export async function upsertServices(db: D1Database, services: ServiceInput[], nowIso: string): Promise<number> {
   const stmt = db.prepare(
     `INSERT INTO services (id, name, endpoint, protocol, network, price_amount, price_currency,
-       usd_per_call, category, description, source, first_seen, last_seen)
-     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?12)
+       usd_per_call, category, description, source, bazaar_calls_30d, bazaar_payers_30d, first_seen, last_seen)
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?14)
      ON CONFLICT(endpoint) DO UPDATE SET
        name=?2, network=?5, price_amount=?6, price_currency=?7, usd_per_call=?8,
-       category=?9, description=?10, source=?11, last_seen=?12`,
+       category=?9, description=?10, source=?11, bazaar_calls_30d=?12, bazaar_payers_30d=?13, last_seen=?14`,
   );
   const batch = services.map((s) =>
     stmt.bind(s.id, s.name, s.endpoint, s.protocol, s.network, s.priceAmount, s.priceCurrency,
-      s.usdPerCall, s.category, s.description, s.source, nowIso),
+      s.usdPerCall, s.category, s.description, s.source, s.bazaarCalls30d, s.bazaarPayers30d, nowIso),
   );
   if (batch.length > 0) await db.batch(batch);
   return batch.length;
@@ -30,6 +30,7 @@ export async function loadServices(db: D1Database): Promise<StoredService[]> {
     priceAmount: r.price_amount as string | null, priceCurrency: r.price_currency as string | null,
     usdPerCall: r.usd_per_call as number | null, category: r.category as string,
     description: r.description as string | null, source: r.source as string,
+    bazaarCalls30d: r.bazaar_calls_30d as number | null, bazaarPayers30d: r.bazaar_payers_30d as number | null,
     firstSeen: r.first_seen as string, lastSeen: r.last_seen as string,
   }));
 }

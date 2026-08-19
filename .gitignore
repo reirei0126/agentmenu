@@ -1,3 +1,5 @@
 node_modules/
 .wrangler/
 dist/
+.orgh-worktrees/
+.DS_Store
