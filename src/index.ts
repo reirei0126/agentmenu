@@ -1,3 +1,5 @@
+import { runScheduled } from "./run";
+
 export interface Env {
   DB: D1Database;
 }
@@ -20,7 +22,7 @@ export default {
     return new Response("Not found. The menu lives at / and /catalog.json.", { status: 404 });
   },
 
-  async scheduled(_ctrl: ScheduledController, env: Env, _ctx: ExecutionContext): Promise<void> {
-    // wired in Task 6
+  async scheduled(_ctrl: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(runScheduled(env.DB, fetch, new Date().toISOString()).then(() => undefined));
   },
 } satisfies ExportedHandler<Env>;
