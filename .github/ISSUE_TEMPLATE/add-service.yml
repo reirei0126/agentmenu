@@ -1,0 +1,16 @@
+name: Add your service
+description: List your x402 endpoint on agentmenu. Takes about a minute — we're glad you're here.
+title: "[listing] "
+labels: ["listing-request"]
+body:
+  - type: input
+    id: endpoint
+    attributes: { label: Endpoint URL, description: The https URL that returns 402 with payment requirements }
+    validations: { required: true }
+  - type: input
+    id: name
+    attributes: { label: Service name }
+    validations: { required: true }
+  - type: textarea
+    id: notes
+    attributes: { label: Anything else we should know? (category, docs link) }
