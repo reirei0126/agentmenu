@@ -1,5 +1,6 @@
 import { runScheduled } from "./run";
 import { buildCatalog, validateCatalog } from "./catalog";
+import { renderIndex } from "./html";
 
 export interface Env {
   DB: D1Database;
@@ -17,6 +18,12 @@ List your service: https://github.com/REPLACE_GH_USER/agentmenu/issues/new/choos
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(req.url);
+    if (pathname === "/") {
+      const catalog = await buildCatalog(env.DB, new Date().toISOString());
+      return new Response(renderIndex(catalog), {
+        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" },
+      });
+    }
     if (pathname === "/llms.txt") {
       return new Response(LLMS_TXT, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }

@@ -33,4 +33,11 @@ describe("routes", () => {
     const after = (await env.DB.prepare("SELECT COUNT(*) AS n FROM agent_hits").first<{ n: number }>())!.n;
     expect(after).toBe(before);
   });
+
+  it("serves the human page", async () => {
+    const res = await SELF.fetch("https://agentmenu.dev/");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/html");
+    expect(await res.text()).toContain("agentmenu");
+  });
 });
