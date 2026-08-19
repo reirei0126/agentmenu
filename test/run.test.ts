@@ -26,14 +26,21 @@ describe("runScheduled", () => {
   });
 
   it("keeps last-good data and records the error when discovery is down", async () => {
-    // Self-contained setup: storage is isolated per test, so seed our own last-good state.
+    // Seed our own last-good state, then assert nothing about it changed. Written to be
+    // independent of the pool's storage-isolation model: we compare before/after values
+    // rather than absolute counts, so it holds whether or not a sibling test ran first.
     const ep = "https://api.example.com/seed";
     await upsertServices(env.DB, [{
       id: await stableId(ep), name: "seed", endpoint: ep, protocol: "x402", network: "base",
       priceAmount: "1", priceCurrency: "USDC", usdPerCall: 0.000001, category: "other",
       description: null, source: '["bazaar"]', bazaarCalls30d: 1, bazaarPayers30d: 1,
     }], "2026-08-19T00:00:00Z");
-    await env.DB.prepare("INSERT INTO meta (key, value) VALUES ('last_scan_success_at', '2026-08-19T00:00:00Z')").run();
+    await env.DB.prepare(
+      "INSERT INTO meta (key, value) VALUES ('last_scan_success_at', ?1) ON CONFLICT(key) DO UPDATE SET value=?1",
+    ).bind("2026-08-19T00:00:00Z").run();
+
+    const countBefore = (await env.DB.prepare("SELECT COUNT(*) AS n FROM services").first<{ n: number }>())!.n;
+    expect(countBefore).toBeGreaterThanOrEqual(1);
 
     const mock: typeof fetch = async (input) => {
       const url = String(input);
@@ -43,9 +50,14 @@ describe("runScheduled", () => {
     };
     const out = await runScheduled(env.DB, mock, "2026-08-19T06:00:00Z");
     expect(out.scanOk).toBe(false);
-    const services = await env.DB.prepare("SELECT COUNT(*) AS n FROM services").first<{ n: number }>();
-    expect(services!.n).toBe(1); // previous data intact
+
+    const countAfter = (await env.DB.prepare("SELECT COUNT(*) AS n FROM services").first<{ n: number }>())!.n;
+    expect(countAfter).toBe(countBefore); // previous data intact, nothing dropped
+    const seed = await env.DB.prepare("SELECT last_seen FROM services WHERE endpoint = ?1").bind(ep).first<{ last_seen: string }>();
+    expect(seed!.last_seen).toBe("2026-08-19T00:00:00Z"); // untouched by the failed scan
     const meta = await env.DB.prepare("SELECT value FROM meta WHERE key='last_scan_success_at'").first<{ value: string }>();
     expect(meta!.value).toBe("2026-08-19T00:00:00Z"); // unchanged
+    const err = await env.DB.prepare("SELECT value FROM meta WHERE key='last_scan_error'").first<{ value: string }>();
+    expect(err!.value).toContain("2026-08-19T06:00:00Z"); // failure recorded, not swallowed
   });
 });

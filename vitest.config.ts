@@ -1,17 +1,18 @@
-import { defineWorkersConfig, readD1Migrations } from "@cloudflare/vitest-pool-workers/config";
+import { cloudflareTest, readD1Migrations } from "@cloudflare/vitest-pool-workers";
+import { defineConfig } from "vitest/config";
 
-export default defineWorkersConfig(async () => {
-  const migrations = await readD1Migrations("./migrations");
-  return {
-    test: {
-      exclude: ["**/node_modules/**", "**/.orgh-worktrees/**"],
-      setupFiles: ["./test/setup.ts"],
-      poolOptions: {
-        workers: {
-          wrangler: { configPath: "./wrangler.jsonc" },
-          miniflare: { bindings: { TEST_MIGRATIONS: migrations } },
-        },
-      },
-    },
-  };
+export default defineConfig({
+  plugins: [
+    cloudflareTest(async () => {
+      const migrations = await readD1Migrations("./migrations");
+      return {
+        wrangler: { configPath: "./wrangler.jsonc" },
+        miniflare: { bindings: { TEST_MIGRATIONS: migrations } },
+      };
+    }),
+  ],
+  test: {
+    exclude: ["**/node_modules/**", "**/.orgh-worktrees/**"],
+    setupFiles: ["./test/setup.ts"],
+  },
 });
