@@ -43,6 +43,6 @@ ${staleBanner}
 <tbody>${rows}</tbody></table>
 <footer><p>Data sources: x402 discovery API. Prices are read from 402 payment requirements — we never pay on your behalf.
 Coverage: the top 1,000 services from the x402 discovery API (15,324 listed in total — the API caps unpaginated reads at 1,000). We'd rather tell you than pretend this is everything.
-Run a paid endpoint? <a href="https://github.com/REPLACE_GH_USER/agentmenu/issues/new/choose">Add your service</a> — we'd love to list you.</p></footer>
+Run a paid endpoint? <a href="https://github.com/reirei0126/agentmenu/issues/new/choose">Add your service</a> — we'd love to list you.</p></footer>
 </body></html>`;
 }

@@ -3,7 +3,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-08-01",
   "d1_databases": [
-    { "binding": "DB", "database_name": "agentmenu", "database_id": "REPLACE_ON_DEPLOY", "migrations_dir": "migrations" }
+    { "binding": "DB", "database_name": "agentmenu", "database_id": "aae5f3b0-364e-4195-bf86-bf97a9c353d1", "migrations_dir": "migrations" }
   ],
   "triggers": { "crons": ["0 */6 * * *"] }
 }

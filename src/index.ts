@@ -12,7 +12,7 @@ A machine-readable catalog of x402 paid endpoints, with normalized prices
 and independently measured uptime/latency — so agents can compare before paying.
 
 Catalog (JSON): https://agentmenu.dev/catalog.json
-List your service: https://github.com/REPLACE_GH_USER/agentmenu/issues/new/choose
+List your service: https://github.com/reirei0126/agentmenu/issues/new/choose
 `;
 
 export default {

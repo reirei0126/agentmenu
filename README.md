@@ -53,7 +53,7 @@ agentmenu currently lists the top **1,000** services from the x402 discovery API
 
 ## How to get listed
 
-Run a paid x402 endpoint? Open an issue: [Add your service](https://github.com/REPLACE_GH_USER/agentmenu/issues/new/choose) — it takes about a minute, and agentmenu also picks up new listings automatically from the x402 discovery API on its next scan.
+Run a paid x402 endpoint? Open an issue: [Add your service](https://github.com/reirei0126/agentmenu/issues/new/choose) — it takes about a minute, and agentmenu also picks up new listings automatically from the x402 discovery API on its next scan.
 
 ## Probing — and how to opt out
 
@@ -92,7 +92,7 @@ npx wrangler dev
 
 **掲載件数について**: 現在は x402 discovery API 上位 **1,000** 件を掲載しています(API全体には合計 **15,324** 件が登録されています)。`uptime_7d` の計測を正直な数字にできる範囲として上位1,000件を選んでおり、隠さずここに明記します。
 
-**掲載申請**: 有料の x402 エンドポイントを運用している方は、[Add your service](https://github.com/REPLACE_GH_USER/agentmenu/issues/new/choose) からご連絡ください。1分程度で完了します。discovery API からの自動検出でも次回スキャン時に拾われます。
+**掲載申請**: 有料の x402 エンドポイントを運用している方は、[Add your service](https://github.com/reirei0126/agentmenu/issues/new/choose) からご連絡ください。1分程度で完了します。discovery API からの自動検出でも次回スキャン時に拾われます。
 
 **プローブとオプトアウト**: agentmenu は6時間ごとに `User-Agent: agentmenu-probe (+https://agentmenu.dev)` を名乗って軽量な生存確認を行います。1エンドポイントあたり6時間に1回まで、`robots.txt` の指示は尊重します。プローブを拒否したい場合は、対象サイトの `robots.txt` に以下を追加してください。
 
