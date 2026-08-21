@@ -1,4 +1,8 @@
-const PROBE_UA = "agentmenu-probe (+https://agentmenu.dev)";
+// The URL in the UA exists so an operator we probe can find out who we are. `agentmenu.dev` is
+// not registered yet, so pointing at it would make this identifier useless — we name the address
+// that actually serves. Switch back to the canonical domain once it is bought and attached.
+// The `agentmenu-probe` token is unchanged, so robots.txt opt-outs already in the wild keep working.
+export const PROBE_UA = "agentmenu-probe (+https://agentmenu.rei-uesugi.workers.dev)";
 
 export function parseRobots(txt: string): string[] {
   const out: string[] = [];

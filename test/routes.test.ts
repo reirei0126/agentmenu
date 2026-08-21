@@ -28,7 +28,7 @@ describe("routes", () => {
   it("does not count our own probe UA", async () => {
     const before = (await env.DB.prepare("SELECT COUNT(*) AS n FROM agent_hits").first<{ n: number }>())!.n;
     await SELF.fetch("https://agentmenu.dev/catalog.json", {
-      headers: { "user-agent": "agentmenu-probe (+https://agentmenu.dev)" },
+      headers: { "user-agent": "agentmenu-probe (+https://agentmenu.rei-uesugi.workers.dev)" },
     });
     const after = (await env.DB.prepare("SELECT COUNT(*) AS n FROM agent_hits").first<{ n: number }>())!.n;
     expect(after).toBe(before);

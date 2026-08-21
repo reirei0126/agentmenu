@@ -34,7 +34,7 @@ describe("fetchDiscovery", () => {
     expect(items.length).toBe(2);
     expect(calls.length).toBe(1);
     expect(calls[0].url).toBe(`${DISCOVERY_URL}?limit=${DISCOVERY_LIMIT}`);
-    expect(calls[0].ua).toBe("agentmenu-probe (+https://agentmenu.dev)");
+    expect(calls[0].ua).toBe("agentmenu-probe (+https://agentmenu.rei-uesugi.workers.dev)");
   });
 
   it("throws on non-200 so the caller can keep last-good data", async () => {

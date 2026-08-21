@@ -1,5 +1,6 @@
 import type { ServiceInput } from "./types";
 import { normalizeResource } from "./normalize";
+import { PROBE_UA } from "./probe";
 
 export const DISCOVERY_URL = "https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources";
 // Verified 2026-08-19: `limit` clamps at 1000. Pagination does work (offset is honored
@@ -10,7 +11,7 @@ export const DISCOVERY_LIMIT = 1000;
 
 export async function fetchDiscovery(fetchFn: typeof fetch): Promise<unknown[]> {
   const res = await fetchFn(`${DISCOVERY_URL}?limit=${DISCOVERY_LIMIT}`, {
-    headers: { accept: "application/json", "user-agent": "agentmenu-probe (+https://agentmenu.dev)" },
+    headers: { accept: "application/json", "user-agent": PROBE_UA },
   });
   if (!res.ok) throw new Error(`discovery fetch failed: HTTP ${res.status}`);
   const body = (await res.json()) as { items?: unknown[] };
